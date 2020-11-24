@@ -1,0 +1,54 @@
+#include <Arduino.h>
+#include <FastLED.h>
+
+#define NUM_LEDS         30
+#define LED_PIN          7
+#define BRIGHTNESS       100
+
+
+CRGB leds[NUM_LEDS];
+uint8_t ColorIndex[NUM_LEDS];
+
+uint8_t PalletIndex = 0; //where the pallet starts from 
+
+DEFINE_GRADIENT_PALETTE (myPal)
+{
+0,   0,  212, 255,              //Cyan
+61,  96, 4,   192,             //Purp
+125, 9,  9,   121,             //Dark Blue
+194, 96, 4,   192,             //Purp
+255, 0,  212, 255,             //Cyan
+};
+
+CRGBPalette16 BlueAndPurp = myPal;
+
+
+void setup() 
+{
+LEDS.addLeds< WS2812B, LED_PIN> (leds, NUM_LEDS);
+
+FastLED.setBrightness(BRIGHTNESS);
+
+    for(int i = 0; i < NUM_LEDS; i++)
+    {
+        ColorIndex[i] = random8();
+    }
+}
+
+void loop()
+{
+
+ for(int i = 0; i < NUM_LEDS; i++)
+ {
+    leds[i] = ColorFromPalette(BlueAndPurp, ColorIndex[i]);
+ }
+
+ EVERY_N_MILLISECONDS(10)
+    {
+        for(int i = 0; i < NUM_LEDS; i++)
+        {
+            ColorIndex[i]++;
+        }
+    }
+    FastLED.show();
+}
